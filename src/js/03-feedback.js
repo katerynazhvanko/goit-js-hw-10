@@ -11,7 +11,7 @@ feedback.addEventListener('submit', onFormSubmit);
 reloadPage();
 
 function onFeedbackFormMessage(e) {
-  formData[e.target.name] = e.target.value.trim();
+  formData[e.target.name] = e.target.value || '';
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
   console.log(formData);
 }
