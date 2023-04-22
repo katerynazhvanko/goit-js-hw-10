@@ -8,7 +8,7 @@ const feedback = document.querySelector('.feedback-form');
 feedback.addEventListener('input', throttle(onFeedbackFormMessage, 500));
 feedback.addEventListener('submit', onFormSubmit);
 
-reloadPage();
+window.addEventListener('beforeunload', onSaveInformationToLocalStorage);
 
 function onFeedbackFormMessage(e) {
   formData[e.target.name] = e.target.value || '';
@@ -24,12 +24,19 @@ function onFormSubmit(e) {
   formData = {};
 }
 
+function onSaveInformationToLocalStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+}
+
+reloadPage();
+
 function reloadPage() {
   const savedInformation = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if (savedInformation) {
+  if (savedInformation !== null) {
     const { email, message } = savedInformation;
     feedback.email.value = email || '';
     feedback.message.value = message || '';
+    formData = savedInformation;
     console.log(savedInformation);
   }
 }
