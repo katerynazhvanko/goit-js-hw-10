@@ -9,7 +9,7 @@ feedback.addEventListener('input', throttle(onFeedbackFormMessage, 500));
 feedback.addEventListener('submit', onFormSubmit);
 
 function onFeedbackFormMessage(e) {
-  formData[e.target.name] = e.target.value || '';
+  formData[e.target.name] = e.target.value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
   console.log(formData);
 }
