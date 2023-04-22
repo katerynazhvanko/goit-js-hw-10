@@ -28,8 +28,8 @@ function reloadPage() {
   const savedInformation = JSON.parse(localStorage.getItem(STORAGE_KEY));
   if (savedInformation) {
     const { email, message } = savedInformation;
-    feedback.email.value = email;
-    feedback.message.value = message;
+    feedback.email.value = email || '';
+    feedback.message.value = message || '';
     console.log(savedInformation);
   }
 }
