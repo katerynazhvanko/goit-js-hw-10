@@ -1,14 +1,12 @@
 import throttle from 'lodash.throttle';
 
 const STORAGE_KEY = 'feedback-form-state';
-let formData = {};
+let formData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
 
 const feedback = document.querySelector('.feedback-form');
 
 feedback.addEventListener('input', throttle(onFeedbackFormMessage, 500));
 feedback.addEventListener('submit', onFormSubmit);
-
-window.addEventListener('beforeunload', onSaveInformationToLocalStorage);
 
 function onFeedbackFormMessage(e) {
   formData[e.target.name] = e.target.value || '';
@@ -24,19 +22,14 @@ function onFormSubmit(e) {
   formData = {};
 }
 
-function onSaveInformationToLocalStorage() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-}
-
 reloadPage();
 
 function reloadPage() {
   const savedInformation = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  if (savedInformation !== null) {
+  if (savedInformation) {
     const { email, message } = savedInformation;
     feedback.email.value = email || '';
     feedback.message.value = message || '';
-    formData = savedInformation;
     console.log(savedInformation);
   }
 }
