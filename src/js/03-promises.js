@@ -9,6 +9,7 @@ const refs = {
 };
 
 refs.btn.addEventListener('click', onPromiseCreate);
+refs.btn.disabled = false;
 
 function createPromise(position, delay) {
   return new Promise((resolve, reject) => {
@@ -30,15 +31,28 @@ function onPromiseCreate(event) {
   let valueStep = Number(refs.step.value);
   let valueAmount = Number(refs.amount.value);
 
-  for (let i = 1; i <= valueAmount; i += 1) {
+  refs.delay.value = '';
+  refs.step.value = '';
+  refs.amount.value = '';
+
+  refs.btn.disabled = true;
+
+  let promises = [];
+
+  for (let i = 0; i <= valueAmount; i += 1) {
     let promise = valueDelay + valueStep * i;
 
-    createPromise(i, promise)
-      .then(({ position, delay }) => {
-        Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
-      })
-      .catch(({ position, delay }) => {
-        Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
-      });
+    promises.push(
+      createPromise(i, promise)
+        .then(({ position, delay }) => {
+          Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`);
+        })
+        .catch(({ position, delay }) => {
+          Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
+        })
+    );
   }
+  Promise.all(promises).finally(() => {
+    refs.btn.disabled = false;
+  });
 }
