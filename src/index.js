@@ -3,6 +3,10 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import debounce from 'lodash.debounce';
 
 import fetchCountries from './js/fetchCountries';
+import {
+  renderFullDescription,
+  renderSmallDescription,
+} from './js/renderingCountries';
 
 const DEBOUNCE_DELAY = 300;
 
@@ -12,24 +16,22 @@ const refs = {
   countryInfo: document.querySelector('.country-info'),
 };
 
-refs.countryList.style.visibility = 'hidden';
-refs.countryInfo.style.visibility = 'hidden';
+hiddenInformation();
 
 refs.searchInput.addEventListener(
   'input',
   debounce(onInputSearch, DEBOUNCE_DELAY)
 );
 
-function onInputSearch(e) {
-  e.preventDefault();
+function onInputSearch(event) {
+  event.preventDefault();
 
-  const searchCountries = e.target.value.trim();
+  const searchCountries = event.target.value.trim();
 
   if (!searchCountries) {
     refs.countryList.innerHTML = '';
     refs.countryInfo.innerHTML = '';
-    refs.countryList.style.visibility = 'hidden';
-    refs.countryInfo.style.visibility = 'hidden';
+    hiddenInformation();
     return;
   }
 
@@ -44,8 +46,7 @@ function onInputSearch(e) {
       renderingCountries(result);
     })
     .catch(error => {
-      refs.countryList.innerHTML = '';
-      refs.countryInfo.innerHTML = '';
+      clearInformation();
       Notify.failure('Oops, there is no country with that name');
     });
 }
@@ -57,40 +58,22 @@ function renderingCountries(result) {
     refs.countryList.innerHTML = '';
     refs.countryList.style.visibility = 'hidden';
     refs.countryInfo.style.visibility = 'visible';
-    renderFullDescription(result);
+    refs.countryInfo.innerHTML = renderFullDescription(result);
   }
 
   if (inputLetters > 2 && inputLetters <= 10) {
     refs.countryInfo.innerHTML = '';
     refs.countryList.style.visibility = 'visible';
     refs.countryInfo.style.visibility = 'hidden';
-    renderSmallDescription(result);
+    refs.countryList.innerHTML = renderSmallDescription(result);
   }
 }
 
-function renderSmallDescription(result) {
-  const listMarkup = result
-    .map(({ name, flags }) => {
-      return `<li> <img src="${flags.svg}" alt="${name}" width="50" height="auto">
-      <span>${name.official}</span>
-      </li>`;
-    })
-    .join('');
-  refs.countryList.innerHTML = listMarkup;
-  return listMarkup;
+function hiddenInformation() {
+  refs.countryList.style.visibility = 'hidden';
+  refs.countryInfo.style.visibility = 'hidden';
 }
-
-function renderFullDescription(result) {
-  const cardMarkup = result
-    .map(({ flags, name, capital, population, languages }) => {
-      return `
-      <img src="${flags.svg}" alt="${name}" width="320" height="auto">
-      <h2 class="country-info__title"> ${name.official}</h2>
-      <p>Capital: <span> ${capital}</span></p>
-      <p>Population: <span> ${population}</span></p>
-      <p>Languages: <span> ${Object.values(languages).join(', ')}</span></p>`;
-    })
-    .join('');
-  refs.countryInfo.innerHTML = cardMarkup;
-  return cardMarkup;
+function clearInformation() {
+  refs.countryList.innerHTML = '';
+  refs.countryInfo.innerHTML = '';
 }
