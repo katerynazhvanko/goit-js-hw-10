@@ -29,8 +29,7 @@ function onInputSearch(event) {
   const searchCountries = event.target.value.trim();
 
   if (!searchCountries) {
-    refs.countryList.innerHTML = '';
-    refs.countryInfo.innerHTML = '';
+    clearInformation();
     hiddenInformation();
     return;
   }
